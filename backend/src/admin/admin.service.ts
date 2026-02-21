@@ -1191,12 +1191,13 @@ export class AdminService {
     try {
       await this.dbSetup.ensureAdminUsersTable();
 
-      // Superadmin hardcodeado (solo para el dueño)
-      const SUPER_ADMIN_USERNAME = 'Orlando12';
-      const SUPER_ADMIN_PASSWORD = 'Pomelo_12@';
+      // Superadmin via variables de entorno (nunca hardcodeado)
+      const SUPER_ADMIN_USERNAME = process.env.SUPER_ADMIN_USERNAME || '';
+      const SUPER_ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || '';
 
-      // Verificar si es el superadmin hardcodeado
-      if (username.toLowerCase() === SUPER_ADMIN_USERNAME.toLowerCase() && password === SUPER_ADMIN_PASSWORD) {
+      // Verificar si es el superadmin por env var
+      if (SUPER_ADMIN_USERNAME && SUPER_ADMIN_PASSWORD &&
+          username.toLowerCase() === SUPER_ADMIN_USERNAME.toLowerCase() && password === SUPER_ADMIN_PASSWORD) {
         this.logger.log('🔐 Login con superadmin hardcodeado');
 
         // Buscar o crear el superadmin en la base de datos

@@ -5,7 +5,7 @@ cmds = ["cd backend && npm install --legacy-peer-deps"]
 cmds = [
   "cd backend && npx prisma generate",
   "cd backend && npx prisma db push --accept-data-loss",
-  "cd backend && node scripts/seed-admin.js",
+  "cd backend && ADMIN_USERNAME=$ADMIN_USERNAME ADMIN_PASSWORD=$ADMIN_PASSWORD node scripts/seed-admin.js",
   "cd backend && npx nest build"
 ]
 
