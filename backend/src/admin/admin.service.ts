@@ -686,22 +686,31 @@ export class AdminService {
 
   async createRaffle(createRaffleDto: CreateRaffleDto) {
     try {
-      await this.dbSetup.ensureRafflesTable();
+      this.logger.log(`🚀 Intentando crear rifa: ${createRaffleDto.title}`);
 
-      // Los DTOs ya validan los campos requeridos, pero mantenemos validaciones adicionales de negocio
+      // Asegurar que la tabla existe (solo por seguridad, debería existir siempre)
+      try {
+        await this.dbSetup.ensureRafflesTable();
+      } catch (e) {
+        this.logger.warn('⚠️ Error al asegurar tabla de rifas (no crítico):', e);
+      }
+
       // Generar slug automático si no existe
-      const autoSlug = createRaffleDto.slug || createRaffleDto.title
-        .toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Quitar acentos
-        .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
-        .replace(/^-+|-+$/g, '') // Quitar guiones del inicio/final
-        .substring(0, 50) + '-' + Date.now().toString().slice(-6); // Agregar timestamp para unicidad
+      let autoSlug = createRaffleDto.slug;
+      if (!autoSlug) {
+        autoSlug = createRaffleDto.title
+          .toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Quitar acentos
+          .replace(/[^a-z0-9]+/g, '-') // Reemplazar caracteres especiales con guiones
+          .replace(/^-+|-+$/g, '') // Quitar guiones del inicio/final
+          .substring(0, 50) + '-' + Date.now().toString().slice(-6);
+      }
 
       // Imagen por defecto si no se proporciona
       const defaultImage = 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=800&h=600&fit=crop';
 
-      // Filtrar solo los campos que existen en el esquema de Prisma
-      const raffleData = {
+      // Filtrar campos para Prisma - Asegurar tipos correctos
+      const raffleData: any = {
         title: createRaffleDto.title.trim(),
         description: createRaffleDto.description || null,
         purchaseDescription: createRaffleDto.purchaseDescription || null,
@@ -714,31 +723,51 @@ export class AdminService {
         status: createRaffleDto.status || 'draft',
         slug: autoSlug,
         boletosConOportunidades: createRaffleDto.boletosConOportunidades || false,
-        numeroOportunidades: createRaffleDto.numeroOportunidades || 1,
+        numeroOportunidades: Number(createRaffleDto.numeroOportunidades || 1),
+        giftTickets: Number(createRaffleDto.giftTickets || 0),
         packs: createRaffleDto.packs && Array.isArray(createRaffleDto.packs) && createRaffleDto.packs.length > 0
           ? JSON.parse(JSON.stringify(createRaffleDto.packs))
           : null,
-        bonuses: createRaffleDto.bonuses || [],
+        bonuses: Array.isArray(createRaffleDto.bonuses) ? createRaffleDto.bonuses : [],
       };
-      this.logger.log(`📝 Creating raffle with data: ${raffleData.title}`);
+
+
+      // Limpiar campos que no deben ser null si son obligatorios en Prisma (aunque aquí son opcionales la mayoría)
+      this.logger.log(`📦 Datos finales para Prisma: ${JSON.stringify(raffleData, null, 2)}`);
 
       const createdRaffle = await this.prisma.raffle.create({
         data: raffleData
       });
 
-      // Invalidar cache de rifas
-      await this.cacheService.invalidateRaffles();
 
-      this.logger.log(`✅ Raffle created successfully: ${createdRaffle.id}`);
-      return createdRaffle;
-    } catch (error) {
-      this.logger.error('❌ Error creating raffle:', error);
-      if (error instanceof Error) {
-        throw new Error(`Error al crear la rifa: ${error.message}`);
+      // Invalidar cache de rifas
+      try {
+        await this.cacheService.invalidateRaffles();
+      } catch (cacheErr) {
+        this.logger.warn('⚠️ Error al invalidar cache:', cacheErr);
       }
-      throw new Error('Error desconocido al crear la rifa');
+
+      this.logger.log(`✅ Rifa creada exitosamente con ID: ${createdRaffle.id}`);
+      return createdRaffle;
+    } catch (error: any) {
+      this.logger.error('❌ Error fatal al crear rifa:', error);
+
+      // Manejar error de slug duplicado (Prisma P2002)
+      if (error.code === 'P2002') {
+        const field = error.meta?.target || 'slug';
+        throw new BadRequestException(`Ya existe un registro con el mismo ${field}. Por favor usa uno diferente.`);
+      }
+
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new BadRequestException(
+        error instanceof Error ? `Error al crear la rifa: ${error.message}` : 'Error desconocido al crear la rifa'
+      );
     }
   }
+
 
   async updateRaffle(id: string, updateRaffleDto: UpdateRaffleDto) {
     try {
@@ -803,6 +832,11 @@ export class AdminService {
       if (updateRaffleDto.numeroOportunidades !== undefined) {
         raffleData.numeroOportunidades = Number(updateRaffleDto.numeroOportunidades);
       }
+
+      if (updateRaffleDto.giftTickets !== undefined) {
+        raffleData.giftTickets = Number(updateRaffleDto.giftTickets);
+      }
+
 
       // Campos packs y bonuses siempre editables
       if (updateRaffleDto.packs !== undefined) {
@@ -1197,7 +1231,7 @@ export class AdminService {
 
       // Verificar si es el superadmin por env var
       if (SUPER_ADMIN_USERNAME && SUPER_ADMIN_PASSWORD &&
-          username.toLowerCase() === SUPER_ADMIN_USERNAME.toLowerCase() && password === SUPER_ADMIN_PASSWORD) {
+        username.toLowerCase() === SUPER_ADMIN_USERNAME.toLowerCase() && password === SUPER_ADMIN_PASSWORD) {
         this.logger.log('🔐 Login con superadmin hardcodeado');
 
         // Buscar o crear el superadmin en la base de datos

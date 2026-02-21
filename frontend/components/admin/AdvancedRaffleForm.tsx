@@ -687,6 +687,34 @@ const AdvancedRaffleForm: React.FC<AdvancedRaffleFormProps> = ({
                                             </div>
                                         </div>
 
+                                        {/* Boletos de Regalo */}
+                                        <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                                            <div className="flex items-center space-x-2 mb-4">
+                                                <Plus className="w-5 h-5 text-green-600" />
+                                                <h3 className="font-semibold text-green-900">Boletos de Regalo</h3>
+                                            </div>
+
+                                            <div>
+                                                <label className={labelClasses}>
+                                                    Cantidad de Boletos de Regalo (Por cada compra)
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    {...register('giftTickets', {
+                                                        min: 0,
+                                                        valueAsNumber: true
+                                                    })}
+                                                    className={inputClasses}
+                                                    placeholder="0"
+                                                    defaultValue={0}
+                                                />
+                                                <p className="text-gray-500 text-sm mt-1">
+                                                    Número de boletos adicionales que se regalarán al cliente en cada pedido.
+                                                </p>
+                                            </div>
+                                        </div>
+
+
 
                                         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
                                             <div className="flex items-center space-x-2 mb-2">

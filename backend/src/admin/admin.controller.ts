@@ -174,6 +174,7 @@ export class AdminController {
   @Post('raffles')
   async createRaffle(@Body() createRaffleDto: CreateRaffleDto) {
     try {
+      console.log('📥 RAW CREATE RAFFLE REQUEST BODY:', JSON.stringify(createRaffleDto, null, 2));
       const raffle = await this.adminService.createRaffle(createRaffleDto);
       return {
         success: true,
@@ -188,6 +189,7 @@ export class AdminController {
       );
     }
   }
+
 
   @Roles('admin', 'superadmin')
   @Patch('raffles/:id')

@@ -38,14 +38,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       // Errores HTTP conocidos (400, 401, 403, 404, etc.)
       statusCode = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      
+
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
         const responseObj = exceptionResponse as any;
         message = responseObj.message || exception.message || 'Ha ocurrido un error';
         error = responseObj.error || exception.name;
-        
+
         // En desarrollo, incluir detalles adicionales
         if (this.isDevelopment && responseObj.details) {
           details = responseObj.details;
@@ -56,11 +56,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof Error) {
       // Errores de JavaScript/TypeScript
       statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-      message = this.isDevelopment 
-        ? exception.message 
+      message = this.isDevelopment
+        ? exception.message
         : 'Ha ocurrido un error interno del servidor';
       error = exception.name;
-      
+
       // En desarrollo, incluir stack trace
       if (this.isDevelopment) {
         details = {
@@ -128,8 +128,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       return message || 'La solicitud es inválida';
     }
 
-    if (statusCode >= 500) {
-      return 'Ha ocurrido un error en el servidor. Por favor, intenta más tarde';
+    if (statusCode >= 500 && !this.isDevelopment) {
+      // return 'Ha ocurrido un error en el servidor. Por favor, intenta más tarde';
+      return message;
     }
 
     // Devolver el mensaje original si es amigable

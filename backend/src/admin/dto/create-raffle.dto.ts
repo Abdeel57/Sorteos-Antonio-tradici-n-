@@ -31,7 +31,7 @@ export class CreateRaffleDto {
 
   @IsString({ message: 'La descripción debe ser un texto' })
   @IsOptional()
-  @MaxLength(2000, { message: 'La descripción no puede tener más de 2000 caracteres' })
+  @MaxLength(10000, { message: 'La descripción no puede tener más de 10000 caracteres' })
   description?: string;
 
   @IsString({ message: 'La descripción de compra debe ser un texto' })
@@ -105,7 +105,7 @@ export class UpdateRaffleDto {
 
   @IsString({ message: 'La descripción debe ser un texto' })
   @IsOptional()
-  @MaxLength(2000, { message: 'La descripción no puede tener más de 2000 caracteres' })
+  @MaxLength(10000, { message: 'La descripción no puede tener más de 10000 caracteres' })
   description?: string;
 
   @IsString({ message: 'La descripción de compra debe ser un texto' })

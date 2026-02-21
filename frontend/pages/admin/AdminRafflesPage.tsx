@@ -173,10 +173,11 @@ const AdminRafflesPage: React.FC = () => {
         if (data.bonuses) {
             if (Array.isArray(data.bonuses)) {
                 processedBonuses = data.bonuses
-                    .map(b => {
+                    .map((b: any) => {
+                        if (b === null || b === undefined) return '';
                         // Si es un objeto con 'value', extraer el valor
-                        if (typeof b === 'object' && b !== null && 'value' in b) {
-                            return String((b as any).value || '').trim();
+                        if (typeof b === 'object' && 'value' in b) {
+                            return String(b.value || '').trim();
                         }
                         // Si ya es un string, usarlo directamente
                         return typeof b === 'string' ? b.trim() : '';
@@ -206,33 +207,40 @@ const AdminRafflesPage: React.FC = () => {
         console.log('✅ PROCESSED DATA');
         console.log('📦 Processed packs:', processedPacks);
         console.log('📦 Packs length:', processedPacks?.length || 0);
-        console.log('🎁 Processed bonuses:', processedBonuses);
-        console.log('🎁 Bonuses length:', processedBonuses.length);
+        // Validar fecha
+        const dateObj = new Date(data.drawDate);
+        const isoDateString = isNaN(dateObj.getTime()) ? new Date().toISOString() : dateObj.toISOString();
 
-        const cleaned = {
+        const cleaned: any = {
             title: data.title.trim(),
-            description: data.description || null,
-            purchaseDescription: data.purchaseDescription || null,
-            imageUrl: gallery.length > 0 ? gallery[0] : (data.imageUrl || data.heroImage || null),
-            gallery: gallery.length > 0 ? gallery : null,
+            description: data.description || undefined,
+            purchaseDescription: data.purchaseDescription || undefined,
+            imageUrl: gallery.length > 0 ? gallery[0] : (data.imageUrl || data.heroImage || undefined),
+            gallery: gallery.length > 0 ? gallery : undefined,
             price: Number(data.price),
             tickets: Number(data.tickets),
-            drawDate: new Date(data.drawDate),
+            drawDate: isoDateString,
             status: data.status || 'draft',
-            slug: data.slug || null,
+            slug: data.slug || undefined,
             boletosConOportunidades: data.boletosConOportunidades || false,
-            numeroOportunidades: data.numeroOportunidades || 1,
-            packs: processedPacks,
+            numeroOportunidades: Number(data.numeroOportunidades || 1),
+            giftTickets: Number(data.giftTickets || 0),
+            packs: processedPacks && processedPacks.length > 0 ? processedPacks : undefined,
             bonuses: processedBonuses
-            // NO enviar: heroImage, sold, createdAt, updatedAt
-            // Estos no existen en el esquema Prisma o son generados automáticamente
         };
 
-        console.log('📤 SENDING TO BACKEND');
-        console.log('📤 Full cleaned object:', JSON.stringify(cleaned, null, 2));
-        console.log('📦 Packs in cleaned:', cleaned.packs);
-        console.log('🎁 Bonuses in cleaned:', cleaned.bonuses);
+
+        // Eliminar campos undefined para evitar errores de validación en el backend
+        Object.keys(cleaned).forEach(key => {
+            if (cleaned[key] === undefined) {
+                delete cleaned[key];
+            }
+        });
+
+        console.log('📤 SENDING TO BACKEND', cleaned);
         return cleaned;
+
+
     };
 
     const handleSaveRaffle = async (data: Raffle) => {
@@ -314,16 +322,17 @@ const AdminRafflesPage: React.FC = () => {
     };
 
     const handleDuplicateRaffle = (raffle: Raffle) => {
-        const duplicatedRaffle = {
+        const duplicatedRaffle: any = {
             ...raffle,
             id: undefined,
             title: `${raffle.title} (Copia)`,
             slug: `${raffle.slug}-copia-${Date.now()}`,
             status: 'draft' as const,
             sold: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            createdAt: new Date(),
+            updatedAt: new Date()
         };
+
         handleOpenModal(duplicatedRaffle);
     };
 
