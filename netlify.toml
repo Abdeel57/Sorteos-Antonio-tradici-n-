@@ -7,12 +7,11 @@
   NODE_VERSION = "18"
   NPM_FLAGS = "--legacy-peer-deps"
   # ⚠️ CAMBIAR AQUÍ: URL de tu backend en Railway/Render para este cliente
-  VITE_API_URL = "https://TU-BACKEND-URL.up.railway.app/api"
+  VITE_API_URL = "https://sorteos-antonio-tradici-n-production.up.railway.app/api"
 
 [[redirects]]
   from = "/api/*"
-  # ⚠️ CAMBIAR AQUÍ: misma URL del backend
-  to = "https://TU-BACKEND-URL.up.railway.app/api/:splat"
+  to = "https://sorteos-antonio-tradici-n-production.up.railway.app/api/:splat"
   status = 200
 
 [[redirects]]
