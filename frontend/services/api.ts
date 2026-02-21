@@ -16,7 +16,7 @@ const isLocal = typeof window !== 'undefined' && (
     window.location.hostname === '127.0.0.1' ||
     window.location.hostname === '0.0.0.0'
 );
-const API_URL = isLocal ? 'http://localhost:3000/api' : ((import.meta as any).env?.VITE_API_URL || 'http://localhost:3000/api');
+const API_URL = isLocal ? 'http://localhost:3000/api' : ((import.meta as any).env?.VITE_API_URL || 'https://sorteosantoniotradicion.com/api');
 
 console.log('🔌 API Configuration:', {
     hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',

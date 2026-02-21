@@ -47,13 +47,12 @@ async function bootstrap() {
     /\.onrender\.com$/, // Any Render subdomain
     /\.netlify\.app$/, // Any Netlify subdomain
     /dashboard\.render\.com$/, // Render dashboard
-    
+
     // ============================================
     // DOMINIOS DE CLIENTES - Agrega aquí los nuevos
     // ============================================
-    // Ejemplo de cómo agregar un nuevo cliente:
-    // 'https://dominio-del-cliente.com',
-    // 'https://www.dominio-del-cliente.com',
+    /sorteosantoniotradicion\.com$/,
+    /www\.sorteosantoniotradicion\.com$/,
   ];
 
   app.enableCors({
