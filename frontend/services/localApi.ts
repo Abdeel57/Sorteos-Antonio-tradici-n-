@@ -1,71 +1,23 @@
-// Servicio de datos local - funciona sin backend
+// Servicio de datos local - funciona sin backend como fallback
 import { Settings, Raffle, Order, Winner, AdminUser } from '../types';
 
-// Datos hardcodeados para que funcione inmediatamente
+// Configuración vacía por defecto - se llena desde el panel admin
 const HARDCODED_SETTINGS: Settings = {
   id: 'main_settings',
-  siteName: 'Lucky Snap',
-  paymentAccounts: [
-    {
-      id: '1',
-      name: 'Cuenta Principal',
-      accountNumber: '1234-5678-9012-3456',
-      bank: 'Banco Ejemplo',
-      type: 'card'
-    }
-  ],
-  faqs: [
-    {
-      id: '1',
-      question: '¿Cómo funciona Lucky Snap?',
-      answer: 'Lucky Snap es una plataforma de rifas donde puedes comprar boletos y participar en sorteos emocionantes.'
-    },
-    {
-      id: '2',
-      question: '¿Cómo puedo pagar?',
-      answer: 'Aceptamos transferencias bancarias y pagos con tarjeta. Los detalles de pago se proporcionan después de la compra.'
-    }
-  ],
+  siteName: 'Mi Plataforma de Rifas',
+  paymentAccounts: [],
+  faqs: [],
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
-const HARDCODED_RAFFLES: Raffle[] = [
-  {
-    id: '1',
-    title: 'iPhone 15 Pro Max',
-    description: 'El último iPhone con todas las características premium',
-    heroImage: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop',
-    gallery: ['https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop'],
-    tickets: 100,
-    sold: 25,
-    drawDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 días desde ahora
-    packs: [
-      { name: 'Pack Básico', tickets: 1, price: 50 },
-      { name: 'Pack Premium', tickets: 5, price: 200 },
-      { name: 'Pack VIP', tickets: 10, price: 350 }
-    ],
-    bonuses: ['Descuento 10%', 'Boletos extra'],
-    status: 'active',
-    slug: 'iphone-15-pro-max',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-];
+const HARDCODED_RAFFLES: Raffle[] = [];
 
 const HARDCODED_ORDERS: Order[] = [];
 
 const HARDCODED_WINNERS: Winner[] = [];
 
-const HARDCODED_USERS: AdminUser[] = [
-  {
-    id: '1',
-    name: 'Administrador',
-    email: 'admin@luckysnap.com',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-];
+const HARDCODED_USERS: AdminUser[] = [];
 
 // Simular delay de red
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -73,7 +25,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 export const localApi = {
   // Settings
   async getSettings(): Promise<Settings> {
-    await delay(500); // Simular delay de red
+    await delay(500);
     return HARDCODED_SETTINGS;
   },
 
@@ -132,7 +84,7 @@ export const localApi = {
       folio: `ORD-${Date.now()}`,
       status: 'PENDING',
       createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 horas
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
     HARDCODED_ORDERS.push(newOrder);
     return newOrder;

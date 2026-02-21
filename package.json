@@ -1,8 +1,8 @@
 {
-  "name": "lucky-snap",
+  "name": "plataforma-rifas",
   "private": true,
   "version": "1.0.0",
-  "description": "Lucky Snap - Sistema de Rifas Completo",
+  "description": "Plataforma de Rifas - Sistema Completo",
   "type": "module",
   "scripts": {
     "start": "node start-app.js",

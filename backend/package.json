@@ -1,7 +1,7 @@
 {
-  "name": "lucky-snap-backend",
+  "name": "plataforma-rifas-backend",
   "version": "0.0.1",
-  "description": "Backend for Lucky Snap",
+  "description": "Backend - Plataforma de Rifas",
   "private": true,
   "scripts": {
     "build": "npx prisma generate && nest build",
