@@ -1,0 +1,11 @@
+{
+  "clientName": "NOMBRE_DEL_CLIENTE",
+  "domain": "dominio-del-cliente.com",
+  "databaseUrl": "postgresql://usuario:password@host:puerto/database?schema=public",
+  "admin": {
+    "username": "admin",
+    "password": "password123",
+    "email": "admin@cliente.com",
+    "name": "Administrador Principal"
+  }
+}

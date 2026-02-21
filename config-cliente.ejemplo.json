@@ -1,0 +1,12 @@
+{
+  "clientName": "NOMBRE_DEL_CLIENTE",
+  "domain": "dominio-del-cliente.com",
+  "databaseUrl": "postgresql://usuario:password@host:puerto/database?schema=public",
+  "admin": {
+    "username": "admin",
+    "password": "password_seguro_123",
+    "email": "admin@cliente.com",
+    "name": "Administrador Principal"
+  },
+  "_instrucciones": "Copia este archivo como config-cliente.json, completa los datos y ejecuta: node scripts/apply-client-config.js"
+}
